@@ -6,13 +6,14 @@ import zipfile
 def add_file_to_zip(file_path, zip_file):
     zip_file.write(os.path.join(current_directory, 'tags', file_path), arcname=file_path)
 
+# Tags that have any of these strings at the start of their filepath will be ignored
 ignore_folders = {'sound\\', 'globals\\', 'shaders\\', 'fx\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
 
 scen_name = input('Enter your scenario folder name:\n')
 
 current_directory = os.getcwd()
-sevzip_path = os.path.join(current_directory, 'bin\\x64\\7zr.exe')
-relative_path = 'reports/' + scen_name + '/cache_file_loaded_tags.txt'
+sevzip_path = os.path.join(current_directory, 'bin\\x64\\7zr.exe') # utilise H3EK's built-in 7zip
+relative_path = 'reports/' + scen_name + '/cache_file_loaded_tags.txt' # Contains all the referenced tag paths
 file_path = os.path.join(current_directory, relative_path)
 
 try:
