@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import zipfile
 
@@ -14,11 +15,12 @@ sevzip_path = os.path.join(current_directory, 'bin\\x64\\7zr.exe')
 relative_path = 'reports/' + scen_name + '/cache_file_loaded_tags.txt'
 file_path = os.path.join(current_directory, relative_path)
 
-
-with open(file_path, 'r') as data:
-    text = data.readlines()
-
-# TODO: Add exception catch ^^
+try:
+    with open(file_path, 'r') as data:
+        text = data.readlines()
+except FileNotFoundError:
+    print('\nFile not found: ', file_path, '\nDid you build a cache file yet? Please try running the tool again')
+    sys.exit()
 
 tag_paths = []
 
@@ -31,6 +33,8 @@ for line in text:
     
     if year == 2007: # Tag is from original EK, ignore
         continue
+    
+    # TODO: Prevent duplicates from getting added
     
     tag_paths.append(line.strip('\n'))
     
