@@ -33,8 +33,12 @@ for line in text:
     if line[:(line.find('\\') + 1)] in ignore_folders: # Ignore certain folder paths
         continue
     
-    modified_timestamp = os.path.getmtime(os.path.join(current_directory, 'tags', line.strip('\n')))
-    year = time.gmtime(modified_timestamp).tm_year
+    try:
+        modified_timestamp = os.path.getmtime(os.path.join(current_directory, 'tags', line.strip('\n')))
+        year = time.gmtime(modified_timestamp).tm_year
+    except FileNotFoundError:
+        print('\nMissing tag: ' + line.strip('\n'))
+        continue
     
     if year == 2007: # Tag is from original EK, ignore
         continue
