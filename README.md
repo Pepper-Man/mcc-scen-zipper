@@ -13,6 +13,9 @@ Python script for zipping all tags referenced by H3 scenarios, for easy sharing
 * You will find the zip file in your root **H3EK** directory, with the same name as the scenario
 * The zip file can now be shared - the contents can simply be extracted into **H3EK\tags**
 
+# Warning
+* If you are a recipient of the zip, please be sure to back up your **tags** folder before unzipping
+
 # Notes
 * This script ignores any uneditied/bungie-made tags (by checking for a 2007 modified date) to cut down on filesize and unnecessary data transfer
 * You may wish to edit line 10 of the file to add/remove folder paths to include or exclude extra tags from the zip
