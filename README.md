@@ -11,5 +11,8 @@ Python script for zipping all tags referenced by H3 scenarios, for easy sharing
 * Enter the exact name of your scenario tag without extension. For example, **100_citadel** for The Covenant
 * Wait a few seconds for the zipping process to complete
 * You will find the zip file in your root **H3EK** directory, with the same name as the scenario
+* The zip file can now be shared - the contents can simply be extracted into **H3EK\tags**
 
-You may wish to edit line 10 of the file to add/remove folder paths to include or exclude extra tags from the zip
+# Notes
+* You may wish to edit line 10 of the file to add/remove folder paths to include or exclude extra tags from the zip
+* If a tag referenced by the scenario is missing, it will not be added and you will see output informing you of the missing tag path

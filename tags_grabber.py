@@ -24,6 +24,7 @@ except FileNotFoundError:
     sys.exit()
 
 tag_paths = []
+tags_missing = 0
 
 for line in text:
     
@@ -38,6 +39,7 @@ for line in text:
         year = time.gmtime(modified_timestamp).tm_year
     except FileNotFoundError:
         print('\nMissing tag: ' + line.strip('\n'))
+        tags_missing += 1
         continue
     
     if year == 2007: # Tag is from original EK, ignore
@@ -49,3 +51,5 @@ zip_file_path = os.path.join(current_directory, (scen_name + '.zip'))
 with zipfile.ZipFile(zip_file_path, 'w') as zip_file:
     for tag in tag_paths:
         add_file_to_zip(tag, zip_file)
+        
+print('\nTags successfully zipped - ' + str(tags_missing) + ' missing tags')
