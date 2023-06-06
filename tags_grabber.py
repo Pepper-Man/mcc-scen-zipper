@@ -9,7 +9,7 @@ def add_file_to_zip(file_path, zip_file):
 # Tags that have any of these strings at the start of their filepath will be ignored
 ignore_folders = {'sound\\', 'globals\\', 'shaders\\', 'fx\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
 
-scen_name = input('Enter your scenario folder name:\n')
+scen_name = input('Enter your scenario file name:\n')
 
 current_directory = os.getcwd()
 sevzip_path = os.path.join(current_directory, 'bin\\x64\\7zr.exe') # utilise H3EK's built-in 7zip
