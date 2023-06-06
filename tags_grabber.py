@@ -26,7 +26,11 @@ except FileNotFoundError:
 tag_paths = []
 
 for line in text:
-    if line[:(line.find('\\') + 1)] in ignore_folders:
+    
+    if line.strip('\n') in tag_paths: # Ignore duplicate entries
+        continue
+    
+    if line[:(line.find('\\') + 1)] in ignore_folders: # Ignore certain folder paths
         continue
     
     modified_timestamp = os.path.getmtime(os.path.join(current_directory, 'tags', line.strip('\n')))
@@ -34,8 +38,6 @@ for line in text:
     
     if year == 2007: # Tag is from original EK, ignore
         continue
-    
-    # TODO: Prevent duplicates from getting added
     
     tag_paths.append(line.strip('\n'))
     
