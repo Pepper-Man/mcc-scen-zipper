@@ -79,9 +79,12 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
     if len(missing_tag_paths) == 0:  
         messagebox.showinfo('Success', 'Tags successfully zipped - ' + str(tags_missing) + ' missing tags\n\nZip file written to \"' + output_path + '\"')
     else:
-        show_missing = "\n".join(missing_tag_paths)
-        messagebox.showinfo('Success', 'Tags successfully zipped - ' + str(tags_missing) + ' missing tags:\n' + show_missing + '\n\nZip file written to \"' + output_path + '\"')
+        messagebox.showinfo('Success', 'Tags successfully zipped - ' + str(tags_missing) + ' missing tags - see output.txt for details.\n\nZip file written to \"' + output_path + '\"')
     print('\nTags successfully zipped - ' + str(tags_missing) + ' missing tags')
+    
+    with open('output.txt', 'w') as log:
+        for tagfile in missing_tag_paths:
+            log.write(tagfile + '\n')
 
 # -------------------- Program enters here -----------------------------
 
