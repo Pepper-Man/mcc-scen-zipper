@@ -23,10 +23,11 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
     except FileNotFoundError:
         messagebox.showerror('Error', 'File not found: ' + os.path.normpath(file_path) + '\nDid you build a cache file yet? Please try running the tool again')
         print('\nFile not found: ', file_path, '\nDid you build a cache file yet?')
-        sys.exit()
+        return
 
     tag_paths = []
     tags_missing = 0
+    missing_tag_paths = []
 
     for line in text:
     
@@ -42,8 +43,10 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
             modified_timestamp = os.path.getmtime(os.path.join(current_directory, 'tags', line.strip('\n')))
             year = time.gmtime(modified_timestamp).tm_year
         except FileNotFoundError:
-            print('\nMissing tag: ' + line.strip('\n'))
-            tags_missing += 1
+            if line.strip('\n') not in missing_tag_paths:
+                tags_missing += 1
+                print('\nMissing tag: ' + line.strip('\n'))
+                missing_tag_paths.append(line.strip('\n'))
             continue
     
         # Checks if tag is "original" to the relevant EK. Ignores file if true
@@ -73,7 +76,11 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
         for tag in tag_paths:
             add_file_to_zip(tag, zip_file, current_directory)
     
-    messagebox.showinfo('Success', 'Tags successfully zipped - ' + str(tags_missing) + ' missing tags\n\nZip file written to \"' + output_path + '\"')
+    if len(missing_tag_paths) == 0:  
+        messagebox.showinfo('Success', 'Tags successfully zipped - ' + str(tags_missing) + ' missing tags\n\nZip file written to \"' + output_path + '\"')
+    else:
+        show_missing = "\n".join(missing_tag_paths)
+        messagebox.showinfo('Success', 'Tags successfully zipped - ' + str(tags_missing) + ' missing tags:\n' + show_missing + '\n\nZip file written to \"' + output_path + '\"')
     print('\nTags successfully zipped - ' + str(tags_missing) + ' missing tags')
 
 # -------------------- Program enters here -----------------------------
@@ -115,8 +122,10 @@ def grabber_initialise():
     # Error handling
     if (ek_entry.get() == "") or (scenario_field.get() == "") or (output_entry.get() == ""):
         messagebox.showerror("Error", "Not all paths have been selected.")
+        return
     elif not is_filepath_child(scenario_field.get(), ek_entry.get()):
         messagebox.showerror("Error", "Scenario is not in currently selected editing kit.")
+        return
         
     # Get values into vars
     engine_type = engine_type_from_path(scenario_field.get())
