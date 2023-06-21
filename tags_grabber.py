@@ -9,12 +9,11 @@ from tkinter import messagebox
 def add_file_to_zip(file_path, zip_file, current_directory):
     zip_file.write(os.path.join(current_directory, 'tags', file_path), arcname=file_path)
     
-def h3_tag_grab(current_directory, scen_name, output_path):
+def tag_grabber(engine, current_directory, scen_name, output_path):
     # Tags that have any of these strings at the start of their filepath will be ignored
-    ignore_folders_h2 = {'sound\\', 'sound_remastered\\,' 'globals\\', 'shaders\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
+    ignore_folders_h2 = {'sound\\', 'sound_remastered\\', 'globals\\', 'shaders\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
     ignore_folders_h3 = {'sound\\', 'globals\\', 'shaders\\', 'fx\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
     
-    sevzip_path = os.path.join(current_directory, 'bin\\x64\\7zr.exe') # utilise H3EK's built-in 7zip
     relative_path = 'reports/' + scen_name + '/cache_file_loaded_tags.txt' # Contains all the referenced tag paths
     file_path = os.path.join(current_directory, relative_path)
 
@@ -32,9 +31,15 @@ def h3_tag_grab(current_directory, scen_name, output_path):
     
         if line.strip('\n') in tag_paths: # Ignore duplicate entries
             continue
-    
-        if line[:(line.find('\\') + 1)] in ignore_folders_h3: # Ignore certain folder paths
-            continue
+        
+        if (engine == 'Halo 3'):
+            if line[:(line.find('\\') + 1)] in ignore_folders_h3: # Ignore certain folder paths
+                continue
+        elif (engine == 'Halo 2'):
+            test = line[:(line.find('\\') + 1)]
+            if test in ignore_folders_h2:
+                continue
+            
     
         # Grab the year from the last modified date on the file, catch exception if tag doesn't exist
         try:
@@ -45,8 +50,12 @@ def h3_tag_grab(current_directory, scen_name, output_path):
             tags_missing += 1
             continue
     
-        if year == 2007: # Tag is from original EK, ignore
-            continue
+        if (engine == 'Halo 3'):
+            if year == 2007: # Tag is from original H3EK, ignore
+                continue
+        elif (engine == 'Halo 2'):
+            if year == 2004: # Tag is from original H2EK, ignore
+                continue
     
         tag_paths.append(line.strip('\n'))
     
@@ -102,7 +111,7 @@ def grabber_initialise():
     output_path = output_entry.get()
     
     # Run
-    h3_tag_grab(root_folder, scenario_name, output_path)
+    tag_grabber(engine_type, root_folder, scenario_name, output_path)
     
 
 # Window creation
