@@ -33,12 +33,11 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
         if line.strip('\n') in tag_paths: # Ignore duplicate entries
             continue
         
-        if (engine == 'Halo 3'):
+        if (engine == 'H3EK' or 'H3ODSTEK'):
             if line[:(line.find('\\') + 1)] in ignore_folders_h3: # Ignore certain folder paths
                 continue
-        elif (engine == 'Halo 2'):
-            test = line[:(line.find('\\') + 1)]
-            if test in ignore_folders_h2:
+        elif (engine == 'H2EK'):
+            if line[:(line.find('\\') + 1)] in ignore_folders_h2:
                 continue
             
     
@@ -51,12 +50,15 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
             tags_missing += 1
             continue
     
-        if (engine == 'Halo 3'):
+        if (engine == 'H3EK'):
             if year == 2007: # Tag is from original H3EK, ignore
                 continue
-        elif (engine == 'Halo 2'):
+        elif (engine == 'H2EK'):
             if year == 2004: # Tag is from original H2EK, ignore
                 continue
+        #elif (engine == 'H3ODSTEK'):
+            #if year == 2009: # Tag is from original ODSTEK, ignore
+                #continue
     
         tag_paths.append(line.strip('\n'))
     
@@ -85,6 +87,11 @@ def browse_scenario():
     scenario_field.insert(tk.END, file_path)
     scenario_field.config(state='readonly')
     
+def engine_type_from_path(filepath):
+    directories = os.path.normpath(filepath).split(os.sep)
+    tags_index = directories.index('tags') # Locate the "tags" directory in the filepath
+    return directories[tags_index - 1]
+    
 def is_filepath_child(filepath, basepath):
     if os.path.exists(filepath) and os.path.exists(basepath):
         try:
@@ -106,6 +113,7 @@ def grabber_initialise():
         messagebox.showerror("Error", "Scenario is not in currently selected editing kit.")
         
     # Get values into vars
+    engine_type = engine_type_from_path(scenario_field.get())
     root_folder = ek_entry.get()
     scenario_name = scenario_field.get().rsplit('/', 1)[-1].replace('.scenario', '')
     output_path = output_entry.get()
