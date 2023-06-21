@@ -13,7 +13,7 @@ def add_file_to_zip(file_path, zip_file, current_directory):
 def tag_grabber(engine, current_directory, scen_name, output_path):
     # Tags that have any of these strings at the start of their filepath will be ignored
     ignore_folders_h2 = {'sound\\', 'sound_remastered\\', 'globals\\', 'shaders\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
-    ignore_folders_h3 = {'sound\\', 'globals\\', 'shaders\\', 'fx\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
+    ignore_folders_h3plus = {'sound\\', 'globals\\', 'shaders\\', 'fx\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
     
     relative_path = 'reports/' + scen_name + '/cache_file_loaded_tags.txt' # Contains all the referenced tag paths
     file_path = os.path.join(current_directory, relative_path)
@@ -33,8 +33,8 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
         if line.strip('\n') in tag_paths: # Ignore duplicate entries
             continue
         
-        if (engine == 'H3EK' or 'H3ODSTEK'):
-            if line[:(line.find('\\') + 1)] in ignore_folders_h3: # Ignore certain folder paths
+        if (engine == 'H3EK' or 'H3ODSTEK' or 'HREK'):
+            if line[:(line.find('\\') + 1)] in ignore_folders_h3plus: # Ignore certain folder paths
                 continue
         elif (engine == 'H2EK'):
             if line[:(line.find('\\') + 1)] in ignore_folders_h2:
@@ -56,9 +56,12 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
         elif (engine == 'H2EK'):
             if year == 2004: # Tag is from original H2EK, ignore
                 continue
-        #elif (engine == 'H3ODSTEK'):
-            #if year == 2009: # Tag is from original ODSTEK, ignore
-                #continue
+        elif (engine == 'H3ODSTEK'):
+            if year == 2009: # Tag is from original ODSTEK, ignore
+                continue
+        elif (engine == 'HREK'):
+            if year == 2010: # Tag is from original HREK, ignore
+                continue
     
         tag_paths.append(line.strip('\n'))
     
@@ -129,19 +132,8 @@ window.geometry('450x400')
 
 # Information header
 header_font = font.Font(size=11, weight='bold')
-info_label = tk.Label(window, text='Supported: Halo 2, Halo 3, ODST', font=header_font)
+info_label = tk.Label(window, text='Supported: Halo 2, Halo 3, ODST, Reach', font=header_font)
 info_label.grid(row=0, column=1, padx=5, pady=5)
-
-"""
-engine = tk.StringVar(value='Halo 2')
-engine_label = tk.Label(window, text="Choose engine type:")
-engine_label.grid(row=0, column=1, padx=5, pady=5)
-# Engine selection
-engine_options = ['Halo 2', 'Halo 3']
-engine_dd = tk.OptionMenu(window, engine, *engine_options)
-engine_dd.grid(row=1, column=1, padx=5, pady=5)
-"""
-
 
 # Get editing kit location
 folder_label = tk.Label(window, text='Select editing kit root folder:')
