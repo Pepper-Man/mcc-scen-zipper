@@ -9,9 +9,9 @@ Supports all MCC titles except CE
 * Place the .py file somewhere on your pc (don't put it in a protected folder!)
 * Compile your scenario once with **tool build-cache-file**
 * Run the .py file from CMD with **py tags_grabber.py**
-* Click the first **browse** button, and choose the root editing kit directory of the relevant engine, e.g. **H3EK**, **HREK** etc
+* Click the first **browse** button, and choose the root editing kit directory of the relevant engine, e.g. your **H3EK**, **HREK** folder
 * Click the second **browse** button, and simply navigate to and select your **.scenario** file
-* Click the third **browse* button, and navigate to a folder of your choice to save the zip file to
+* Click the third **browse** button, and navigate to a folder of your choice to save the zip file to
 * Hit go!
 * Wait a few seconds for the zipping process to complete
 * You will see an output detailing the success, the number of missing tags, and the file location of the generated zip if you forgot
