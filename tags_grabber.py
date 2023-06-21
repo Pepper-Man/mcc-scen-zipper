@@ -12,8 +12,7 @@ def add_file_to_zip(file_path, zip_file, current_directory):
     
 def tag_grabber(engine, current_directory, scen_name, output_path):
     # Tags that have any of these strings at the start of their filepath will be ignored
-    ignore_folders_h2 = {'sound\\', 'sound_remastered\\', 'globals\\', 'shaders\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
-    ignore_folders_h3plus = {'sound\\', 'globals\\', 'shaders\\', 'fx\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
+    ignore_folders = {'sound\\', 'sound_remastered\\', 'globals\\', 'shaders\\', 'fx\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
     
     relative_path = 'reports/' + scen_name + '/cache_file_loaded_tags.txt' # Contains all the referenced tag paths
     file_path = os.path.join(current_directory, relative_path)
@@ -22,7 +21,8 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
         with open(file_path, 'r') as data:
             text = data.readlines()
     except FileNotFoundError:
-        print('\nFile not found: ', file_path, '\nDid you build a cache file yet? Please try running the tool again')
+        messagebox.showerror('Error', 'File not found: ' + os.path.normpath(file_path) + '\nDid you build a cache file yet? Please try running the tool again')
+        print('\nFile not found: ', file_path, '\nDid you build a cache file yet?')
         sys.exit()
 
     tag_paths = []
@@ -33,14 +33,10 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
         if line.strip('\n') in tag_paths: # Ignore duplicate entries
             continue
         
-        if (engine == 'H3EK' or 'H3ODSTEK' or 'HREK'):
-            if line[:(line.find('\\') + 1)] in ignore_folders_h3plus: # Ignore certain folder paths
-                continue
-        elif (engine == 'H2EK'):
-            if line[:(line.find('\\') + 1)] in ignore_folders_h2:
-                continue
+        # Ignore certain folder paths
+        if line[:(line.find('\\') + 1)] in ignore_folders:
+            continue
             
-    
         # Grab the year from the last modified date on the file, catch exception if tag doesn't exist
         try:
             modified_timestamp = os.path.getmtime(os.path.join(current_directory, 'tags', line.strip('\n')))
@@ -50,19 +46,26 @@ def tag_grabber(engine, current_directory, scen_name, output_path):
             tags_missing += 1
             continue
     
+        # Checks if tag is "original" to the relevant EK. Ignores file if true
         if (engine == 'H3EK'):
-            if year == 2007: # Tag is from original H3EK, ignore
+            if year == 2007:
                 continue
         elif (engine == 'H2EK'):
-            if year == 2004: # Tag is from original H2EK, ignore
+            if year == 2004:
                 continue
         elif (engine == 'H3ODSTEK'):
-            if year == 2009: # Tag is from original ODSTEK, ignore
+            if year == 2009:
                 continue
         elif (engine == 'HREK'):
-            if year == 2010: # Tag is from original HREK, ignore
+            if year == 2010:
                 continue
-    
+        elif (engine == 'H4EK'):
+            if year == 2012:
+                continue
+        elif (engine == 'H2AMPEK'):
+            if year == 2014:
+                continue
+            
         tag_paths.append(line.strip('\n'))
     
     zip_file_path = os.path.join(output_path, (scen_name + '.zip'))
@@ -131,8 +134,8 @@ window.title('MCC Scenario Tags Zipper')
 window.geometry('450x400')
 
 # Information header
-header_font = font.Font(size=11, weight='bold')
-info_label = tk.Label(window, text='Supported: Halo 2, Halo 3, ODST, Reach', font=header_font)
+header_font = font.Font(size=10, weight='bold')
+info_label = tk.Label(window, text='Supported: H2, H3, ODST, Reach, H4, H2AMP', font=header_font)
 info_label.grid(row=0, column=1, padx=5, pady=5)
 
 # Get editing kit location
