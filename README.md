@@ -1,4 +1,4 @@
-# h3-scen-zipper
+# mcc-scen-zipper
 Python script for zipping all tags referenced by H3 scenarios, for easy sharing
 
 # Requirements
