@@ -4,11 +4,15 @@ import time
 import zipfile
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 
-def add_file_to_zip(file_path, zip_file):
+def add_file_to_zip(file_path, zip_file, current_directory):
     zip_file.write(os.path.join(current_directory, 'tags', file_path), arcname=file_path)
     
-def h3_tag_grab():
+def h3_tag_grab(current_directory, scen_name, output_path):
+    # Tags that have any of these strings at the start of their filepath will be ignored
+    ignore_folders_h2 = {'sound\\', 'sound_remastered\\,' 'globals\\', 'shaders\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
+    ignore_folders_h3 = {'sound\\', 'globals\\', 'shaders\\', 'fx\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
     
     sevzip_path = os.path.join(current_directory, 'bin\\x64\\7zr.exe') # utilise H3EK's built-in 7zip
     relative_path = 'reports/' + scen_name + '/cache_file_loaded_tags.txt' # Contains all the referenced tag paths
@@ -46,19 +50,15 @@ def h3_tag_grab():
     
         tag_paths.append(line.strip('\n'))
     
-    zip_file_path = os.path.join(current_directory, (scen_name + '.zip'))
+    zip_file_path = os.path.join(output_path, (scen_name + '.zip'))
     with zipfile.ZipFile(zip_file_path, 'w') as zip_file:
         for tag in tag_paths:
-            add_file_to_zip(tag, zip_file)
-        
+            add_file_to_zip(tag, zip_file, current_directory)
+    
+    messagebox.showinfo('Success', 'Tags successfully zipped - ' + str(tags_missing) + ' missing tags\n\nZip file written to \"' + output_path + '\"')
     print('\nTags successfully zipped - ' + str(tags_missing) + ' missing tags')
 
 # -------------------- Program enters here -----------------------------
-
-# Variables
-# Tags that have any of these strings at the start of their filepath will be ignored
-ignore_folders_h2 = {'sound\\', 'sound_remastered\\,' 'globals\\', 'shaders\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
-ignore_folders_h3 = {'sound\\', 'globals\\', 'shaders\\', 'fx\\', 'ai\\', 'cinematics\\', 'rasterizer\\', 'ui\\', 'camera\\', 'effects\\'}
 
 # UI Functions
 def browse_folder(folder):
@@ -67,11 +67,49 @@ def browse_folder(folder):
     folder.delete(0, tk.END)
     folder.insert(tk.END, folder_path)
     folder.config(state='readonly')
+    
+def browse_scenario():
+    file_path = filedialog.askopenfilename(filetypes=[('Scenario Tag Files', '*.scenario')])
+    scenario_field.config(state='normal')
+    scenario_field.delete(0, tk.END)
+    scenario_field.insert(tk.END, file_path)
+    scenario_field.config(state='readonly')
+    
+def is_filepath_child(filepath, basepath):
+    if os.path.exists(filepath) and os.path.exists(basepath):
+        try:
+            filepath_drive, filepath_abs = os.path.splitdrive(os.path.abspath(filepath))
+            basepath_drive, basepath_abs = os.path.splitdrive(os.path.abspath(basepath))
+            
+            if filepath_drive.lower() == basepath_drive.lower():
+                common_path = os.path.commonpath([filepath_abs, basepath_abs])
+                return common_path == basepath_abs
+        except OSError:
+            pass
+    return False
+    
+def grabber_initialise():
+    # Error handling
+    if (ek_entry.get() == "") or (scenario_field.get() == "") or (output_entry.get() == ""):
+        messagebox.showerror("Error", "Not all paths have been selected.")
+    elif not is_filepath_child(scenario_field.get(), ek_entry.get()):
+        messagebox.showerror("Error", "Scenario is not in currently selected editing kit.")
+        
+    # Get values into vars
+    engine_type = engine.get()
+    root_folder = ek_entry.get()
+    scenario_name = scenario_field.get().rsplit('/', 1)[-1].replace('.scenario', '')
+    output_path = output_entry.get()
+    
+    # Run
+    h3_tag_grab(root_folder, scenario_name, output_path)
+    
 
 # Window creation
 window = tk.Tk()
 window.title("MCC Scenario Tags Zipper")
 window.geometry('450x400')
+window.iconbitmap('icon.ico')
 engine = tk.StringVar(value='Halo 2')
 engine_label = tk.Label(window, text="Choose engine type:")
 engine_label.grid(row=0, column=1, padx=5, pady=5)
@@ -90,10 +128,12 @@ browse_ek_button = tk.Button(window, text='Browse', command=lambda: browse_folde
 browse_ek_button.grid(row=3, column=2, padx=5, pady=5)
 
 # Get scenario name
-scenario_label = tk.Label(window, text='Type your scenario filename (no extension):')
+scenario_label = tk.Label(window, text='Select your scenario tag:')
 scenario_label.grid(row=4, column=1, padx=5, pady=5)
-scenario_field = tk.Entry(window, width=40)
+scenario_field = tk.Entry(window, width=40, state='readonly')
 scenario_field.grid(row=5, column=1, padx=20, pady=5)
+browse_scen_button = tk.Button(window, text='Browse', command=lambda: browse_scenario())
+browse_scen_button.grid(row=5, column=2, padx=5, pady=5)
 
 # Get output folder
 output_label = tk.Label(window, text='Select an output folder for the zip file:')
@@ -108,11 +148,3 @@ go_label = tk.Button(window, text='Grab all tags!', command=lambda: grabber_init
 go_label.grid(row=8, column=1, padx=50, pady=20)
 
 window.mainloop()
-
-
-
-current_directory = "C:\Program Files (x86)\Steam\steamapps\common\H3EK"
-
-scen_name = input('Enter your scenario file name:\n')
-h3_tag_grab()
-
