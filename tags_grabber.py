@@ -3,6 +3,7 @@ import sys
 import time
 import zipfile
 import tkinter as tk
+from tkinter import font
 from tkinter import filedialog
 from tkinter import messagebox
 
@@ -105,28 +106,34 @@ def grabber_initialise():
         messagebox.showerror("Error", "Scenario is not in currently selected editing kit.")
         
     # Get values into vars
-    engine_type = engine.get()
     root_folder = ek_entry.get()
     scenario_name = scenario_field.get().rsplit('/', 1)[-1].replace('.scenario', '')
     output_path = output_entry.get()
     
-    # Run
+    # Run main
     tag_grabber(engine_type, root_folder, scenario_name, output_path)
     
 
 # Window creation
 window = tk.Tk()
-window.title("MCC Scenario Tags Zipper")
+window.title('MCC Scenario Tags Zipper')
 window.geometry('450x400')
-window.iconbitmap('icon.ico')
+
+# Information header
+header_font = font.Font(size=11, weight='bold')
+info_label = tk.Label(window, text='Supported: Halo 2, Halo 3, ODST', font=header_font)
+info_label.grid(row=0, column=1, padx=5, pady=5)
+
+"""
 engine = tk.StringVar(value='Halo 2')
 engine_label = tk.Label(window, text="Choose engine type:")
 engine_label.grid(row=0, column=1, padx=5, pady=5)
-
 # Engine selection
 engine_options = ['Halo 2', 'Halo 3']
 engine_dd = tk.OptionMenu(window, engine, *engine_options)
 engine_dd.grid(row=1, column=1, padx=5, pady=5)
+"""
+
 
 # Get editing kit location
 folder_label = tk.Label(window, text='Select editing kit root folder:')
