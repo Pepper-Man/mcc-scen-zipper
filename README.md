@@ -22,5 +22,5 @@ Supports all MCC titles except CE
 * If you are a recipient of the zip, please be sure to back up your **tags** folder before unzipping
 
 # Notes
-* This script ignores any unedited/bungie-made tags (by checking for the modified date) to cut down on filesize and unnecessary data transfer
+* This script ignores any unedited or bungie/343-made tags (by checking for the modified date) to cut down on filesize and unnecessary data transfer
 * You may wish to edit line 15 of the file to add/remove folder paths to include or exclude extra tags from the zip
